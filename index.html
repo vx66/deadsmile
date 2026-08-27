@@ -15,26 +15,30 @@
     <img src="img/logo.png" alt="Dead Smile Labs Logo" class="site-logo">
   </div>
 
-  <div class="terminal-bar">
-    <span>{{ typedCommand }}<span class="blink">█</span></span>
-  </div>
+  <div id="app">
 
-  <div class="content" id="app">
-    <div v-if="loading" class="loading">Loading...</div>
-    <div v-else-if="articles.length === 0" class="empty">No articles found.</div>
+    <div class="terminal-bar">
+      <span>{{ typedCommand }}<span class="blink">█</span></span>
+    </div>
 
-    <article v-for="article in articles" :key="article.id" class="post">
-      <div class="post-header">
-        <span class="post-tag">[ {{ article.category_name || 'UNCATEGORIZED' }} ]</span>
-        <span class="post-date">{{ article.date || article.created_at }}</span>
-      </div>
-      <h2 class="post-title" @click="togglePost(article.id)">█ {{ article.title }}</h2>
-      <p class="post-subtitle">{{ article.subtitle }}</p>
-      <div class="post-expandable" :id="'post-' + article.id">
-        <p class="post-excerpt">{{ article.excerpt }}</p>
-        <a :href="'/article/' + article.id" class="read-more">Read more →</a>
-      </div>
-    </article>
+    <div class="content">
+      <div v-if="loading" class="loading">Loading...</div>
+      <div v-else-if="articles.length === 0" class="empty">No articles found.</div>
+
+      <article v-for="article in articles" :key="article.id" class="post">
+        <div class="post-header">
+          <span class="post-tag">[ {{ article.category_name || 'UNCATEGORIZED' }} ]</span>
+          <span class="post-date">{{ article.date || article.created_at }}</span>
+        </div>
+        <h2 class="post-title" @click="togglePost(article.id)">█ {{ article.title }}</h2>
+        <p class="post-subtitle">{{ article.subtitle }}</p>
+        <div class="post-expandable" :id="'post-' + article.id">
+          <p class="post-excerpt">{{ article.excerpt }}</p>
+          <a :href="'/article/' + article.id" class="read-more">Read more →</a>
+        </div>
+      </article>
+    </div>
+
   </div>
 
   <div class="bottom-bar">
