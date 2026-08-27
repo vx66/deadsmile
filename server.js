@@ -74,44 +74,6 @@ if (categoryCount.count === 0) {
   insertCategory.run('Forensics', 'forensics');
 }
 
-// Insert default articles if empty
-const articleCount = db.prepare('SELECT COUNT(*) as count FROM articles').get();
-if (articleCount.count === 0) {
-  const insertArticle = db.prepare('INSERT INTO articles (title, subtitle, content, category_id, image) VALUES (?, ?, ?, ?, ?)');
-  
-  insertArticle.run(
-    'Neuro-Interface Protocols',
-    'Experimental research into brain-computer interface technologies.',
-    'Exploring the boundaries of neural signal interpretation and external device integration. Focus on EEG signal processing, non-invasive monitoring, and ethical implications of direct neural connectivity.',
-    1,
-    null
-  );
-  
-  insertArticle.run(
-    'Signal Synthesis',
-    'Audio frequency manipulation and analysis.',
-    'Synthetic signal generation, modulation techniques, and frequency domain processing. Specializing in FM/AM synthesis, spectral analysis, and real-time audio modulation.',
-    2,
-    null
-  );
-  
-  insertArticle.run(
-    'Legacy System Emulation',
-    'Retro computing preservation and emulation research.',
-    'Supporting vintage platforms from the 80s and 90s through modern hardware emulation. Cycle-accurate emulation, hardware compatibility layers, and legacy software preservation.',
-    3,
-    null
-  );
-  
-  insertArticle.run(
-    'Memory Manipulation',
-    'Data persistence and reconstruction research.',
-    'Exploring how digital memories can be stored, retrieved, and manipulated. Data forensics, memory reconstruction algorithms, and long-term storage solutions.',
-    4,
-    null
-  );
-}
-
 // Middleware
 app.use(cors());
 app.use(express.json());
@@ -349,10 +311,6 @@ app.get('/', (req, res) => {
 
 app.get('/article/:id', (req, res) => {
   res.sendFile(path.join(__dirname, 'article.html'));
-});
-
-app.get('/project-:id.html', (req, res) => {
-  res.sendFile(path.join(__dirname, `project-${req.params.id}.html`));
 });
 
 // Start server
