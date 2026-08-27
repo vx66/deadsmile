@@ -16,8 +16,7 @@
   </div>
 
   <div class="terminal-bar">
-    <span>deadsmile@labs ~$ cat /var/log/projects.txt</span>
-    <span class="blink">█</span>
+    <span>{{ typedCommand }}<span class="blink">█</span></span>
   </div>
 
   <div class="content" id="app">
@@ -40,19 +39,56 @@
 
   <div class="bottom-bar">
     <span>Dead Smile Labs © 2026</span>
-    <span>terminal.denpa.labs</span>
+    <a href="/about" class="who-link">Who is Xergno</a>
   </div>
 
 </div>
 
 <script src="/js/vue.global.prod.js"></script>
 <script>
-const { createApp, ref, onMounted } = Vue;
+const { createApp, ref, onMounted, onUnmounted } = Vue;
+
+const COMMANDS = [
+  'deadsmile@hack ~$ cat /var/log/research.txt',
+  'deadsmile@hack ~$ cat /var/log/blog.txt',
+  'deadsmile@hack ~$ cat /var/log/hacking.txt',
+  'deadsmile@hack ~$ cat /var/log/reverse.txt'
+];
 
 createApp({
   setup() {
     const articles = ref([]);
     const loading = ref(true);
+    const typedCommand = ref('');
+
+    let cmdIndex = 0;
+    let charIndex = 0;
+    let deleting = false;
+    let timer = null;
+
+    const typeLoop = () => {
+      const current = COMMANDS[cmdIndex];
+      if (!deleting) {
+        charIndex++;
+        typedCommand.value = current.substring(0, charIndex);
+        if (charIndex === current.length) {
+          deleting = true;
+          timer = setTimeout(typeLoop, 2000);
+        } else {
+          timer = setTimeout(typeLoop, 50);
+        }
+      } else {
+        charIndex--;
+        typedCommand.value = current.substring(0, charIndex);
+        if (charIndex === 0) {
+          deleting = false;
+          cmdIndex = (cmdIndex + 1) % COMMANDS.length;
+          timer = setTimeout(typeLoop, 400);
+        } else {
+          timer = setTimeout(typeLoop, 20);
+        }
+      }
+    };
 
     const togglePost = (id) => {
       const el = document.getElementById('post-' + id);
@@ -79,9 +115,14 @@ createApp({
 
     onMounted(() => {
       fetchArticles();
+      typeLoop();
     });
 
-    return { articles, loading, togglePost };
+    onUnmounted(() => {
+      if (timer) clearTimeout(timer);
+    });
+
+    return { articles, loading, togglePost, typedCommand };
   }
 }).mount('#app');
 </script>

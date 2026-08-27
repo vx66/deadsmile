@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Who is Xergno</title>
+  <link rel="icon" type="image/svg+xml" href="/img/favicon.svg">
+  <link rel="stylesheet" href="/style.css">
+  <script src="/js/marked.min.js"></script>
+</head>
+<body>
+
+<div class="screen">
+
+  <div class="terminal-bar">
+    <span>deadsmile@hack ~$ cat /var/log/xergno.txt</span>
+    <span class="blink">█</span>
+  </div>
+
+  <div class="content" id="app">
+    <div v-if="loading" class="loading">Loading...</div>
+    <div v-else-if="error" class="empty">{{ error }}</div>
+    <div v-else-if="content">
+      <article class="post-full">
+        <h1 class="post-title-full">█ Who is Xergno</h1>
+        <div class="post-content-full" v-html="renderMarkdown(content)"></div>
+      </article>
+      <div class="post-nav">
+        <a href="/" class="nav-button">Volver al home</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="bottom-bar">
+    <span>Dead Smile Labs © 2026</span>
+    <a href="/about" class="who-link">Who is Xergno</a>
+  </div>
+
+</div>
+
+<script src="/js/vue.global.prod.js"></script>
+<script>
+const { createApp, ref, onMounted } = Vue;
+
+createApp({
+  setup() {
+    const content = ref('');
+    const loading = ref(true);
+    const error = ref('');
+
+    const renderMarkdown = (markdown) => {
+      if (!markdown) return '';
+      return marked.parse(markdown);
+    };
+
+    const fetchAbout = async () => {
+      try {
+        const res = await fetch('/api/about');
+        if (!res.ok) throw new Error('Not found');
+        const data = await res.json();
+        content.value = data.content || '';
+      } catch (e) {
+        error.value = 'Page not found';
+      }
+      loading.value = false;
+    };
+
+    onMounted(() => {
+      fetchAbout();
+    });
+
+    return { content, loading, error, renderMarkdown };
+  }
+}).mount('#app');
+</script>
+
+</body>
+</html>

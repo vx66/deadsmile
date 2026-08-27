@@ -34,6 +34,8 @@ html, body {
   text-align: center;
   padding: 20px 0;
   width: 100%;
+  display: block;
+  text-decoration: none;
 }
 
 .site-logo {
@@ -42,6 +44,10 @@ html, body {
   display: block;
   image-rendering: pixelated;
   filter: grayscale(100%) contrast(120%);
+}
+
+.logo-container:hover .site-logo {
+  opacity: 0.85;
 }
 
 /* Terminal Bar */
@@ -344,6 +350,17 @@ html, body {
   color: #444;
   letter-spacing: 1px;
   margin-top: 35px;
+}
+
+.who-link {
+  color: #fff;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.who-link:hover {
+  color: #888;
+  text-decoration: underline;
 }
 
 /* Responsive */

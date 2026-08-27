@@ -51,6 +51,9 @@
           <a href="#" @click.prevent="currentView = 'categories'" :class="{ active: currentView === 'categories' }">
             > CATEGORIES
           </a>
+          <a href="#" @click.prevent="currentView = 'about'" :class="{ active: currentView === 'about' }">
+            > ABOUT
+          </a>
           <a href="/" class="back-link">
             > VIEW SITE
           </a>
@@ -103,6 +106,26 @@
               </div>
             </div>
             <div v-if="categories.length === 0" class="empty-state">No categories found.</div>
+          </div>
+        </div>
+
+        <!-- About View -->
+        <div v-if="currentView === 'about'" class="view">
+          <div class="view-header">
+            <h1>ABOUT ME</h1>
+            <span class="label-hint">Page: /about — content in markdown</span>
+          </div>
+
+          <div class="about-editor">
+            <div class="editor-tabs">
+              <button type="button" :class="{ active: aboutTab === 'write' }" @click="aboutTab = 'write'">WRITE</button>
+              <button type="button" :class="{ active: aboutTab === 'preview' }" @click="aboutTab = 'preview'">PREVIEW</button>
+            </div>
+            <textarea v-show="aboutTab === 'write'" v-model="aboutForm.content" rows="18" placeholder="Write about yourself in markdown..."></textarea>
+            <div v-show="aboutTab === 'preview'" class="markdown-preview" v-html="renderedAbout"></div>
+            <div class="form-actions">
+              <button @click="saveAbout" class="btn-save">SAVE</button>
+            </div>
           </div>
         </div>
       </main>

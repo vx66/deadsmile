@@ -31,10 +31,22 @@ createApp({
       name: ''
     });
 
+    const aboutForm = ref({
+      content: ''
+    });
+    const aboutTab = ref('write');
+
     // Markdown renderer
     const renderedContent = computed(() => {
       if (articleForm.value.content) {
         return marked.parse(articleForm.value.content);
+      }
+      return '<p class="preview-empty">Nothing to preview</p>';
+    });
+
+    const renderedAbout = computed(() => {
+      if (aboutForm.value.content) {
+        return marked.parse(aboutForm.value.content);
       }
       return '<p class="preview-empty">Nothing to preview</p>';
     });
@@ -48,6 +60,7 @@ createApp({
         if (authenticated.value) {
           fetchArticles();
           fetchCategories();
+          fetchAbout();
         }
       } catch (e) {
         authenticated.value = false;
@@ -70,6 +83,7 @@ createApp({
           loginPass.value = '';
           fetchArticles();
           fetchCategories();
+          fetchAbout();
         } else {
           loginError.value = data.error || 'Invalid credentials';
         }
@@ -242,6 +256,26 @@ createApp({
       }
     };
 
+    // About CRUD
+    const fetchAbout = async () => {
+      const response = await fetch('/api/about');
+      if (response.status === 401) {
+        authenticated.value = false;
+        return;
+      }
+      const data = await response.json();
+      aboutForm.value.content = data.content || '';
+    };
+
+    const saveAbout = async () => {
+      await fetch('/api/about', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ content: aboutForm.value.content })
+      });
+      aboutTab.value = 'preview';
+    };
+
     // Initialize
     onMounted(() => {
       checkAuth();
@@ -263,8 +297,13 @@ createApp({
       editingCategory,
       articleForm,
       categoryForm,
+      aboutForm,
+      aboutTab,
       editorTab,
       renderedContent,
+      renderedAbout,
+      saveAbout,
+      fetchAbout,
       openArticleModal,
       closeArticleModal,
       handleImageUpload,

@@ -58,6 +58,12 @@ db.exec(`
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (category_id) REFERENCES categories(id)
   );
+
+  CREATE TABLE IF NOT EXISTS about (
+    id INTEGER PRIMARY KEY CHECK (id = 1),
+    content TEXT,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+  );
 `);
 
 // Add columns if missing
@@ -72,6 +78,14 @@ if (categoryCount.count === 0) {
   insertCategory.run('Engineering', 'engineering');
   insertCategory.run('Preservation', 'preservation');
   insertCategory.run('Forensics', 'forensics');
+}
+
+// Insert default about content if empty
+const aboutCount = db.prepare('SELECT COUNT(*) as count FROM about').get();
+if (aboutCount.count === 0) {
+  db.prepare('INSERT INTO about (id, content) VALUES (1, ?)').run(
+    '# Who is Xergno\n\nInvestigador de sistemas, arquitectura de señales y preservación de tecnología olvidada.\n\n> Operando entre la ingeniería y el ruido.\n\nEste laboratorio documenta experimentos, análisis y reconstrucción de sistemas.'
+  );
 }
 
 // Middleware
@@ -199,6 +213,15 @@ app.get('/api/articles/public/:id', (req, res) => {
   res.json(article);
 });
 
+// Public about page endpoint
+app.get('/api/about', (req, res) => {
+  const about = db.prepare('SELECT content, updated_at FROM about WHERE id = 1').get();
+  if (!about) {
+    return res.json({ content: '', updated_at: null });
+  }
+  res.json(about);
+});
+
 // API Routes (protected)
 
 // Get all articles
@@ -290,6 +313,17 @@ app.put('/api/categories/:id', requireAuth, (req, res) => {
   res.json(category);
 });
 
+// Update about page
+app.put('/api/about', requireAuth, (req, res) => {
+  const { content } = req.body;
+  db.prepare(`
+    INSERT INTO about (id, content, updated_at) VALUES (1, ?, CURRENT_TIMESTAMP)
+    ON CONFLICT(id) DO UPDATE SET content = excluded.content, updated_at = CURRENT_TIMESTAMP
+  `).run(content || '');
+  const about = db.prepare('SELECT content, updated_at FROM about WHERE id = 1').get();
+  res.json(about);
+});
+
 // Delete category
 app.delete('/api/categories/:id', requireAuth, (req, res) => {
   db.prepare('DELETE FROM categories WHERE id = ?').run(req.params.id);
@@ -311,6 +345,10 @@ app.get('/', (req, res) => {
 
 app.get('/article/:id', (req, res) => {
   res.sendFile(path.join(__dirname, 'article.html'));
+});
+
+app.get('/about', (req, res) => {
+  res.sendFile(path.join(__dirname, 'about.html'));
 });
 
 // Start server

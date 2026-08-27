@@ -334,6 +334,32 @@ html, body {
   min-height: 200px;
 }
 
+/* About editor */
+.about-editor textarea {
+  width: 100%;
+  background: #111;
+  border: 1px solid #333;
+  color: #fff;
+  padding: 12px;
+  font-family: inherit;
+  font-size: 14px;
+  resize: vertical;
+  min-height: 300px;
+}
+
+.about-editor textarea:focus {
+  outline: none;
+  border-color: #666;
+}
+
+.about-editor .editor-tabs {
+  margin-bottom: 0;
+}
+
+.about-editor .markdown-preview {
+  min-height: 300px;
+}
+
 .form-group select {
   appearance: none;
   cursor: pointer;
