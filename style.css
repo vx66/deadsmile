@@ -116,10 +116,10 @@ html, body {
 }
 
 .post-excerpt {
-  color: #bbb;
-  font-size: 14px;
+  color: #ccc;
+  font-size: 15px;
   margin-bottom: 15px;
-  line-height: 1.6;
+  line-height: 1.7;
 }
 
 .post-expandable {
@@ -194,21 +194,28 @@ html, body {
   border: 1px solid #333;
 }
 
-/* Markdown Content */
+/* Markdown Content - colorido y legible */
+.post-body-text {
+  font-size: 16px;
+  line-height: 1.8;
+}
+
 .post-body-text h1,
 .post-body-text h2,
 .post-body-text h3 {
   color: #fff;
-  margin: 15px 0 10px;
+  margin: 20px 0 12px;
 }
 
-.post-body-text h1 { font-size: 20px; }
-.post-body-text h2 { font-size: 17px; }
-.post-body-text h3 { font-size: 15px; }
+.post-body-text h1 { font-size: 24px; color: #f0f0f0; }
+.post-body-text h2 { font-size: 20px; color: #e0e0e0; }
+.post-body-text h3 { font-size: 17px; color: #d0d0d0; }
 
 .post-body-text p {
-  color: #bbb;
-  margin-bottom: 12px;
+  color: #ddd;
+  font-size: 16px;
+  margin-bottom: 14px;
+  line-height: 1.8;
 }
 
 .post-body-text img {
@@ -217,50 +224,98 @@ html, body {
   margin: 10px 0;
 }
 
-.post-body-text code {
-  background: #0a0a0a;
-  border: 1px solid #222;
-  padding: 2px 6px;
-  font-family: 'Courier New', monospace;
-  font-size: 13px;
+.post-body-text strong {
+  color: #fff;
+  font-weight: bold;
+}
+
+.post-body-text em {
+  color: #ccc;
+  font-style: italic;
+}
+
+.post-body-text del {
   color: #888;
 }
 
+.post-body-text a {
+  color: #5ab5ff;
+  text-decoration: underline;
+}
+
+.post-body-text a:hover {
+  color: #8acdff;
+}
+
+.post-body-text code {
+  background: #1a1a1a;
+  border: 1px solid #333;
+  padding: 2px 6px;
+  font-family: 'Courier New', monospace;
+  font-size: 14px;
+  color: #ffd15a;
+}
+
 .post-body-text pre {
-  background: #0a0a0a;
-  border: 1px solid #222;
-  padding: 12px;
+  background: #111;
+  border: 1px solid #333;
+  padding: 15px;
   overflow-x: auto;
-  margin: 10px 0;
+  margin: 15px 0;
 }
 
 .post-body-text pre code {
   background: none;
   border: none;
   padding: 0;
+  color: #a8ff5a;
+  font-size: 14px;
 }
 
 .post-body-text blockquote {
-  border-left: 3px solid #333;
+  border-left: 3px solid #5ab5ff;
   padding-left: 15px;
-  color: #888;
-  margin: 10px 0;
+  color: #bbb;
+  margin: 15px 0;
+  font-style: italic;
 }
 
 .post-body-text ul,
 .post-body-text ol {
   padding-left: 25px;
-  margin: 10px 0;
-  color: #ccc;
+  margin: 15px 0;
+  color: #ddd;
+  font-size: 16px;
 }
 
-.post-body-text a {
-  color: #fff;
-  text-decoration: underline;
+.post-body-text li {
+  margin-bottom: 6px;
 }
 
-.post-body-text strong {
+.post-body-text hr {
+  border: none;
+  border-top: 1px solid #333;
+  margin: 20px 0;
+}
+
+.post-body-text table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 15px 0;
+}
+
+.post-body-text th,
+.post-body-text td {
+  border: 1px solid #333;
+  padding: 10px;
+  color: #ddd;
+  font-size: 15px;
+}
+
+.post-body-text th {
+  background: #161616;
   color: #fff;
+  font-weight: bold;
 }
 
 /* Terminal Code Box */
@@ -344,24 +399,26 @@ html, body {
 }
 
 .post-content-full {
-  color: #bbb;
-  font-size: 15px;
-  line-height: 1.8;
+  color: #ddd;
+  font-size: 17px;
+  line-height: 1.9;
 }
 
 .post-content-full h1,
 .post-content-full h2,
 .post-content-full h3 {
   color: #fff;
-  margin: 20px 0 12px;
+  margin: 25px 0 15px;
 }
 
-.post-content-full h1 { font-size: 22px; }
-.post-content-full h2 { font-size: 18px; }
-.post-content-full h3 { font-size: 16px; }
+.post-content-full h1 { font-size: 26px; color: #f0f0f0; }
+.post-content-full h2 { font-size: 22px; color: #e0e0e0; }
+.post-content-full h3 { font-size: 19px; color: #d0d0d0; }
 
 .post-content-full p {
-  margin-bottom: 15px;
+  margin-bottom: 18px;
+  color: #ddd;
+  line-height: 1.9;
 }
 
 .post-content-full img {
@@ -370,50 +427,79 @@ html, body {
   margin: 15px 0;
 }
 
-.post-content-full code {
-  background: #0a0a0a;
-  border: 1px solid #222;
-  padding: 2px 6px;
-  font-family: 'Courier New', monospace;
-  font-size: 13px;
+.post-content-full strong {
+  color: #fff;
+  font-weight: bold;
+}
+
+.post-content-full em {
+  color: #ccc;
+  font-style: italic;
+}
+
+.post-content-full del {
   color: #888;
 }
 
+.post-content-full a {
+  color: #5ab5ff;
+  text-decoration: underline;
+}
+
+.post-content-full a:hover {
+  color: #8acdff;
+}
+
+.post-content-full code {
+  background: #1a1a1a;
+  border: 1px solid #333;
+  padding: 3px 8px;
+  font-family: 'Courier New', monospace;
+  font-size: 15px;
+  color: #ffd15a;
+}
+
 .post-content-full pre {
-  background: #0a0a0a;
-  border: 1px solid #222;
-  padding: 15px;
+  background: #111;
+  border: 1px solid #333;
+  padding: 18px;
   overflow-x: auto;
-  margin: 15px 0;
+  margin: 18px 0;
 }
 
 .post-content-full pre code {
   background: none;
   border: none;
   padding: 0;
+  color: #a8ff5a;
+  font-size: 15px;
 }
 
 .post-content-full blockquote {
-  border-left: 3px solid #333;
-  padding-left: 15px;
-  color: #888;
-  margin: 15px 0;
+  border-left: 3px solid #5ab5ff;
+  padding-left: 18px;
+  color: #ccc;
+  margin: 18px 0;
+  font-style: italic;
+  font-size: 16px;
 }
 
 .post-content-full ul,
 .post-content-full ol {
   padding-left: 25px;
-  margin: 15px 0;
-  color: #ccc;
+  margin: 18px 0;
+  color: #ddd;
+  font-size: 17px;
 }
 
-.post-content-full a {
-  color: #fff;
-  text-decoration: underline;
+.post-content-full li {
+  margin-bottom: 8px;
 }
 
-.post-content-full strong {
-  color: #fff;
+.post-content-full hr {
+  border: none;
+  border-top: 1px solid #333;
+  margin: 25px 0;
 }
 
 .post-content-full table {
@@ -427,11 +513,13 @@ html, body {
   border: 1px solid #333;
   padding: 10px;
   text-align: left;
+  color: #ddd;
 }
 
 .post-content-full th {
-  background: #111;
+  background: #161616;
   color: #fff;
+  font-weight: bold;
 }
 
 /* Navigation */
