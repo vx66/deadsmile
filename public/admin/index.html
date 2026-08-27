@@ -98,9 +98,11 @@
             <div v-for="category in categories" :key="category.id" class="category-item">
               <div class="category-info">
                 <h3>{{ category.name }}</h3>
-                <span class="category-slug">{{ category.slug }}</span>
+                <span class="category-slug">{{ category.slug }} · {{ category.visible ? 'VISIBLE' : 'HIDDEN' }}</span>
               </div>
               <div class="category-actions">
+                <button @click="toggleCategoryVis(category)" class="btn-edit">{{ category.visible ? 'HIDE' : 'SHOW' }}</button>
+                <a :href="'/category/' + category.slug" target="_blank" class="btn-view">VIEW</a>
                 <button @click="editCategory(category)" class="btn-edit">EDIT</button>
                 <button @click="deleteCategory(category.id)" class="btn-delete">DEL</button>
               </div>
@@ -199,6 +201,12 @@
           <div class="form-group">
             <label>NAME</label>
             <input v-model="categoryForm.name" type="text" required>
+          </div>
+          <div class="form-group">
+            <label>VISIBLE IN MENU</label>
+            <label class="checkbox-label">
+              <input type="checkbox" v-model="categoryForm.visible"> Show this section in the menu
+            </label>
           </div>
           <div class="form-actions">
             <button type="button" @click="closeCategoryModal" class="btn-cancel">CANCEL</button>

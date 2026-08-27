@@ -28,7 +28,8 @@ createApp({
     });
     
     const categoryForm = ref({
-      name: ''
+      name: '',
+      visible: true
     });
 
     const aboutForm = ref({
@@ -216,9 +217,9 @@ createApp({
     const openCategoryModal = (category = null) => {
       editingCategory.value = category;
       if (category) {
-        categoryForm.value = { name: category.name };
+        categoryForm.value = { name: category.name, visible: !!category.visible };
       } else {
-        categoryForm.value = { name: '' };
+        categoryForm.value = { name: '', visible: true };
       }
       showCategoryModal.value = true;
     };
@@ -238,10 +239,22 @@ createApp({
       await fetch(url, {
         method: method,
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(categoryForm.value)
+        body: JSON.stringify({
+          name: categoryForm.value.name,
+          visible: categoryForm.value.visible ? 1 : 0
+        })
       });
 
       closeCategoryModal();
+      fetchCategories();
+    };
+
+    const toggleCategoryVis = async (category) => {
+      await fetch(`/api/categories/${category.id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name: category.name, visible: category.visible ? 0 : 1 })
+      });
       fetchCategories();
     };
 
@@ -314,7 +327,8 @@ createApp({
       closeCategoryModal,
       saveCategory,
       editCategory,
-      deleteCategory
+      deleteCategory,
+      toggleCategoryVis
     };
   }
 }).mount('#app');

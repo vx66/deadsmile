@@ -3,33 +3,36 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>DEAD SMILE</title>
+  <title>Dead SMILE - Category</title>
   <link rel="icon" type="image/svg+xml" href="/img/favicon.svg">
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="/style.css">
 </head>
 <body>
 
 <div class="screen">
 
   <div class="logo-container">
-    <img src="img/logo.png" alt="Dead Smile Labs Logo" class="site-logo">
+    <a href="/"><img src="/img/logo.png" alt="Dead Smile Labs Logo" class="site-logo"></a>
   </div>
 
   <div id="app">
 
     <nav class="menu-bar">
-      <a href="/" class="menu-link active">[ HOME ]</a>
-      <a v-for="cat in menuCategories" :key="cat.id" :href="'/category/' + cat.slug" class="menu-link">[ {{ cat.name }} ]</a>
+      <a href="/" class="menu-link">[ HOME ]</a>
+      <a v-for="cat in menuCategories" :key="cat.id" :href="'/category/' + cat.slug" class="menu-link" :class="{ active: cat.slug === currentCat }">[ {{ cat.name }} ]</a>
       <a href="/about" class="menu-link">[ ABOUT ]</a>
     </nav>
 
     <div class="terminal-bar">
-      <span>{{ typedCommand }}<span class="blink">█</span></span>
+      <span>deadsmile@hack ~$ cat /var/log/<span id="cat-id"></span>.txt</span>
+      <span class="blink">█</span>
     </div>
 
     <div class="content">
+      <h1 class="category-title" v-if="categoryName">[ {{ categoryName }} ]</h1>
+
       <div v-if="loading" class="loading">Loading...</div>
-      <div v-else-if="articles.length === 0" class="empty">No articles found.</div>
+      <div v-else-if="articles.length === 0" class="empty">No articles in this section.</div>
 
       <article v-for="article in articles" :key="article.id" class="post">
         <div class="post-header">
@@ -55,59 +58,15 @@
 
 <script src="/js/vue.global.prod.js"></script>
 <script>
-const { createApp, ref, onMounted, onUnmounted } = Vue;
-
-const COMMANDS = [
-  'deadsmile@hack ~$ cat /var/log/research.txt',
-  'deadsmile@hack ~$ cat /var/log/blog.txt',
-  'deadsmile@hack ~$ cat /var/log/hacking.txt',
-  'deadsmile@hack ~$ cat /var/log/reverse.txt'
-];
+const { createApp, ref, onMounted } = Vue;
 
 createApp({
   setup() {
+    const currentCat = ref(window.location.pathname.split('/').filter(Boolean).pop() || '');
+    const menuCategories = ref([]);
+    const categoryName = ref('');
     const articles = ref([]);
     const loading = ref(true);
-    const typedCommand = ref('');
-    const menuCategories = ref([]);
-
-    const fetchMenu = async () => {
-      try {
-        const res = await fetch('/api/categories/public');
-        menuCategories.value = await res.json();
-      } catch (e) {
-        menuCategories.value = [];
-      }
-    };
-
-    let cmdIndex = 0;
-    let charIndex = 0;
-    let deleting = false;
-    let timer = null;
-
-    const typeLoop = () => {
-      const current = COMMANDS[cmdIndex];
-      if (!deleting) {
-        charIndex++;
-        typedCommand.value = current.substring(0, charIndex);
-        if (charIndex === current.length) {
-          deleting = true;
-          timer = setTimeout(typeLoop, 2000);
-        } else {
-          timer = setTimeout(typeLoop, 50);
-        }
-      } else {
-        charIndex--;
-        typedCommand.value = current.substring(0, charIndex);
-        if (charIndex === 0) {
-          deleting = false;
-          cmdIndex = (cmdIndex + 1) % COMMANDS.length;
-          timer = setTimeout(typeLoop, 400);
-        } else {
-          timer = setTimeout(typeLoop, 20);
-        }
-      }
-    };
 
     const togglePost = (id) => {
       const el = document.getElementById('post-' + id);
@@ -124,7 +83,7 @@ createApp({
 
     const fetchArticles = async () => {
       try {
-        const res = await fetch('/api/articles/public');
+        const res = await fetch('/api/articles/public?category=' + encodeURIComponent(currentCat.value));
         articles.value = await res.json();
       } catch (e) {
         articles.value = [];
@@ -132,17 +91,20 @@ createApp({
       loading.value = false;
     };
 
-    onMounted(() => {
+    onMounted(async () => {
+      try {
+        const res = await fetch('/api/categories/public');
+        menuCategories.value = await res.json();
+        const match = menuCategories.value.find(c => c.slug === currentCat.value);
+        if (match) categoryName.value = match.name;
+      } catch (e) {
+        menuCategories.value = [];
+      }
+      document.getElementById('cat-id').textContent = currentCat.value;
       fetchArticles();
-      fetchMenu();
-      typeLoop();
     });
 
-    onUnmounted(() => {
-      if (timer) clearTimeout(timer);
-    });
-
-    return { articles, loading, togglePost, typedCommand, menuCategories };
+    return { currentCat, menuCategories, categoryName, articles, loading, togglePost };
   }
 }).mount('#app');
 </script>

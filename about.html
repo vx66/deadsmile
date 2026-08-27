@@ -12,28 +12,37 @@
 
 <div class="screen">
 
-  <div class="terminal-bar">
-    <span>deadsmile@hack ~$ cat /var/log/xergno.txt</span>
-    <span class="blink">█</span>
-  </div>
+  <div id="app">
 
-  <div class="content" id="app">
-    <div v-if="loading" class="loading">Loading...</div>
-    <div v-else-if="error" class="empty">{{ error }}</div>
-    <div v-else-if="content">
-      <article class="post-full">
-        <h1 class="post-title-full">█ Who is Xergno</h1>
-        <div class="post-content-full" v-html="renderMarkdown(content)"></div>
-      </article>
-      <div class="post-nav">
-        <a href="/" class="nav-button">Volver al home</a>
+    <nav class="menu-bar">
+      <a href="/" class="menu-link">[ HOME ]</a>
+      <a v-for="cat in menuCategories" :key="cat.id" :href="'/category/' + cat.slug" class="menu-link">[ {{ cat.name }} ]</a>
+      <a href="/about" class="menu-link active">[ ABOUT ]</a>
+    </nav>
+
+    <div class="terminal-bar">
+      <span>deadsmile@hack ~$ cat /var/log/xergno.txt</span>
+      <span class="blink">█</span>
+    </div>
+
+    <div class="content">
+      <div v-if="loading" class="loading">Loading...</div>
+      <div v-else-if="error" class="empty">{{ error }}</div>
+      <div v-else-if="content">
+        <article class="post-full">
+          <h1 class="post-title-full">█ Who is Xergno</h1>
+          <div class="post-content-full" v-html="renderMarkdown(content)"></div>
+        </article>
+        <div class="post-nav">
+          <a href="/" class="nav-button">Volver al home</a>
+        </div>
       </div>
     </div>
+
   </div>
 
   <div class="bottom-bar">
     <span>Dead Smile Labs © 2026</span>
-    <a href="/about" class="who-link">Who is Xergno</a>
   </div>
 
 </div>
@@ -47,6 +56,16 @@ createApp({
     const content = ref('');
     const loading = ref(true);
     const error = ref('');
+    const menuCategories = ref([]);
+
+    const fetchMenu = async () => {
+      try {
+        const res = await fetch('/api/categories/public');
+        menuCategories.value = await res.json();
+      } catch (e) {
+        menuCategories.value = [];
+      }
+    };
 
     const renderMarkdown = (markdown) => {
       if (!markdown) return '';
@@ -67,9 +86,10 @@ createApp({
 
     onMounted(() => {
       fetchAbout();
+      fetchMenu();
     });
 
-    return { content, loading, error, renderMarkdown };
+    return { content, loading, error, renderMarkdown, menuCategories };
   }
 }).mount('#app');
 </script>

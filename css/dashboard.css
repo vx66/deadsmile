@@ -154,8 +154,39 @@ html, body {
 }
 
 .btn-delete:hover {
+  color: #ff6b6b;
+  border-color: #ff6b6b;
+}
+
+.btn-view {
+  display: inline-block;
+  background: transparent;
+  color: #5ab5ff;
+  border: 1px solid #333;
+  padding: 6px 12px;
+  font-family: inherit;
+  font-size: 11px;
+  text-decoration: none;
+  transition: all 0.2s;
+}
+
+.btn-view:hover {
   color: #fff;
-  border-color: #fff;
+  border-color: #5ab5ff;
+}
+
+.checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #aaa;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.checkbox-label input[type="checkbox"] {
+  width: auto;
+  accent-color: #fff;
 }
 
 /* Articles List */

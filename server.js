@@ -42,6 +42,8 @@ db.exec(`
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     name TEXT NOT NULL,
     slug TEXT UNIQUE NOT NULL,
+    visible INTEGER DEFAULT 1,
+    position INTEGER DEFAULT 0,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP
   );
 
@@ -69,15 +71,16 @@ db.exec(`
 // Add columns if missing
 try { db.exec("ALTER TABLE articles ADD COLUMN date TEXT"); } catch(e) {}
 try { db.exec("ALTER TABLE articles ADD COLUMN excerpt TEXT"); } catch(e) {}
+try { db.exec("ALTER TABLE categories ADD COLUMN visible INTEGER DEFAULT 1"); } catch(e) {}
+try { db.exec("ALTER TABLE categories ADD COLUMN position INTEGER DEFAULT 0"); } catch(e) {}
 
 // Insert default categories if empty
 const categoryCount = db.prepare('SELECT COUNT(*) as count FROM categories').get();
 if (categoryCount.count === 0) {
-  const insertCategory = db.prepare('INSERT INTO categories (name, slug) VALUES (?, ?)');
-  insertCategory.run('Research', 'research');
-  insertCategory.run('Engineering', 'engineering');
-  insertCategory.run('Preservation', 'preservation');
-  insertCategory.run('Forensics', 'forensics');
+  const insertCategory = db.prepare('INSERT INTO categories (name, slug, visible, position) VALUES (?, ?, 1, ?)');
+  insertCategory.run('ARTICLES', 'articles', 0);
+  insertCategory.run('PROJECTS', 'projects', 1);
+  insertCategory.run('BLOG', 'blog', 2);
 }
 
 // Insert default about content if empty
@@ -187,14 +190,27 @@ app.get('/api/health', (req, res) => {
 
 // Public articles endpoint (no auth required)
 app.get('/api/articles/public', (req, res) => {
-  const articles = db.prepare(`
+  const { category } = req.query;
+  let sql = `
     SELECT a.id, a.title, a.subtitle, a.excerpt, a.content, a.image, a.date, a.created_at,
            c.name as category_name, c.slug as category_slug 
     FROM articles a 
     LEFT JOIN categories c ON a.category_id = c.id 
-    ORDER BY a.date DESC, a.created_at DESC
-  `).all();
+  `;
+  const params = [];
+  if (category) {
+    sql += ' WHERE c.slug = ?';
+    params.push(category);
+  }
+  sql += ' ORDER BY a.date DESC, a.created_at DESC';
+  const articles = db.prepare(sql).all(...params);
   res.json(articles);
+});
+
+// Public categories for menu (visible only, ordered)
+app.get('/api/categories/public', (req, res) => {
+  const categories = db.prepare('SELECT id, name, slug FROM categories WHERE visible = 1 ORDER BY position ASC, id ASC').all();
+  res.json(categories);
 });
 
 // Public single article endpoint
@@ -289,7 +305,7 @@ app.delete('/api/articles/:id', requireAuth, (req, res) => {
 
 // Get all categories
 app.get('/api/categories', requireAuth, (req, res) => {
-  const categories = db.prepare('SELECT * FROM categories ORDER BY name').all();
+  const categories = db.prepare('SELECT * FROM categories ORDER BY position ASC, id ASC').all();
   res.json(categories);
 });
 
@@ -297,18 +313,20 @@ app.get('/api/categories', requireAuth, (req, res) => {
 app.post('/api/categories', requireAuth, (req, res) => {
   const { name } = req.body;
   const slug = name.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+  const nextPosition = db.prepare('SELECT COALESCE(MAX(position), 0) + 1 as pos FROM categories').get().pos;
   
-  const result = db.prepare('INSERT INTO categories (name, slug) VALUES (?, ?)').run(name, slug);
+  const result = db.prepare('INSERT INTO categories (name, slug, visible, position) VALUES (?, ?, 1, ?)').run(name, slug, nextPosition);
   const category = db.prepare('SELECT * FROM categories WHERE id = ?').get(result.lastInsertRowid);
   res.status(201).json(category);
 });
 
 // Update category
 app.put('/api/categories/:id', requireAuth, (req, res) => {
-  const { name } = req.body;
+  const { name, visible, position } = req.body;
   const slug = name.toLowerCase().replace(/[^a-z0-9]+/g, '-');
   
-  db.prepare('UPDATE categories SET name = ?, slug = ? WHERE id = ?').run(name, slug, req.params.id);
+  db.prepare('UPDATE categories SET name = ?, slug = ?, visible = ?, position = ? WHERE id = ?')
+    .run(name, slug, visible !== undefined ? (visible ? 1 : 0) : 1, position !== undefined ? position : 0, req.params.id);
   const category = db.prepare('SELECT * FROM categories WHERE id = ?').get(req.params.id);
   res.json(category);
 });
@@ -349,6 +367,10 @@ app.get('/article/:id', (req, res) => {
 
 app.get('/about', (req, res) => {
   res.sendFile(path.join(__dirname, 'about.html'));
+});
+
+app.get('/category/:slug', (req, res) => {
+  res.sendFile(path.join(__dirname, 'category.html'));
 });
 
 // Start server
