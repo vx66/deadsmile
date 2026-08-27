@@ -8,8 +8,8 @@ services:
     ports:
       - "3001:3000"
     volumes:
-      - ./data:/app/data
-      - ./uploads:/app/uploads
+      - deadsmile-data:/app/data
+      - deadsmile-uploads:/app/uploads
     environment:
       - NODE_ENV=production
       - PORT=3000
@@ -19,3 +19,7 @@ services:
       timeout: 3s
       retries: 3
       start_period: 5s
+
+volumes:
+  deadsmile-data:
+  deadsmile-uploads:

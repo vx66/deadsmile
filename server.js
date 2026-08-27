@@ -22,7 +22,18 @@ if (!fs.existsSync(uploadsDir)) {
 }
 
 // Database setup - use data directory for persistence
-const db = new Database(path.join(dataDir, 'database.db'));
+const dbFile = path.join(dataDir, 'database.db');
+
+// Safety backup: keep last known-good DB before opening this session
+if (fs.existsSync(dbFile)) {
+  try {
+    fs.copyFileSync(dbFile, path.join(dataDir, 'database.backup.db'));
+  } catch (e) {
+    console.error('[backup] No se pudo copiar database.db a database.backup.db:', e.message);
+  }
+}
+
+const db = new Database(dbFile);
 db.pragma('journal_mode = WAL');
 
 // Create tables
