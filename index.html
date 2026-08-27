@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dead Smile Labs</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="screen">
+
+  <div class="logo-container">
+    <img src="img/logo.png" alt="Dead Smile Labs Logo" class="site-logo">
+  </div>
+
+  <div class="terminal-bar">
+    <span>deadsmile@labs ~$ cat /var/log/projects.txt</span>
+    <span class="blink">█</span>
+  </div>
+
+  <div class="content">
+
+    <!-- PROJECT 1 -->
+    <article class="post">
+      <div class="post-header">
+        <span class="post-tag">[ RESEARCH ]</span>
+        <span class="post-date">26-08-2026</span>
+      </div>
+      <h2 class="post-title" onclick="togglePost(this)">█ Neuro-Interface Protocols</h2>
+      <p class="post-subtitle">Experimental research into brain-computer interface technologies.</p>
+      <div class="post-expandable">
+        <p class="post-body-text">Exploring the boundaries of neural signal interpretation and external device integration. Focus on EEG signal processing, non-invasive monitoring, and ethical implications of direct neural connectivity.</p>
+        <div class="post-details">
+          <div class="detail-item">STATUS: ACTIVE</div>
+          <div class="detail-item">PRIORITY: HIGH</div>
+          <div class="detail-item">TEAM: 3 RESEARCHERS</div>
+        </div>
+        <div class="post-code">
+          <code>
+$ ./run_neuro_interface --mode experimental<br>
+[INFO] Initializing neural signal processor...<br>
+[INFO] Loading EEG data streams...<br>
+[INFO] Interface protocol v2.3.1 ready<br>
+[OK] All systems operational
+          </code>
+        </div>
+        <a href="project-1.html" class="read-more">Ver proyecto completo →</a>
+      </div>
+    </article>
+
+    <!-- PROJECT 2 -->
+    <article class="post">
+      <div class="post-header">
+        <span class="post-tag">[ ENGINEERING ]</span>
+        <span class="post-date">20-08-2026</span>
+      </div>
+      <h2 class="post-title" onclick="togglePost(this)">█ Signal Synthesis</h2>
+      <p class="post-subtitle">Audio frequency manipulation and analysis.</p>
+      <div class="post-expandable">
+        <p class="post-body-text">Synthetic signal generation, modulation techniques, and frequency domain processing. Specializing in FM/AM synthesis, spectral analysis, and real-time audio modulation.</p>
+        <div class="post-details">
+          <div class="detail-item">STATUS: DEVELOPMENT</div>
+          <div class="detail-item">PRIORITY: MEDIUM</div>
+          <div class="detail-item">TEAM: 2 ENGINEERS</div>
+        </div>
+        <div class="post-code">
+          <code>
+$ ./signal_synth --freq 440 --mod AM<br>
+[INFO] Generating sine wave at 440Hz...<br>
+[INFO] Applying AM modulation...<br>
+[INFO] Output written to output.wav<br>
+[OK] Signal synthesis complete
+          </code>
+        </div>
+        <a href="project-2.html" class="read-more">Ver proyecto completo →</a>
+      </div>
+    </article>
+
+    <!-- PROJECT 3 -->
+    <article class="post">
+      <div class="post-header">
+        <span class="post-tag">[ PRESERVATION ]</span>
+        <span class="post-date">15-08-2026</span>
+      </div>
+      <h2 class="post-title" onclick="togglePost(this)">█ Legacy System Emulation</h2>
+      <p class="post-subtitle">Retro computing preservation and emulation research.</p>
+      <div class="post-expandable">
+        <p class="post-body-text">Supporting vintage platforms from the 80s and 90s through modern hardware emulation. Cycle-accurate emulation, hardware compatibility layers, and legacy software preservation.</p>
+        <div class="post-details">
+          <div class="detail-item">STATUS: MAINTENANCE</div>
+          <div class="detail-item">PRIORITY: MEDIUM</div>
+          <div class="detail-item">TEAM: 4 SPECIALISTS</div>
+        </div>
+        <div class="post-code">
+          <code>
+$ ./emulator --platform c64 --rom game.rom<br>
+[INFO] Loading Commodore 64 emulation core...<br>
+[INFO] Mapping memory regions...<br>
+[INFO] ROM checksum verified<br>
+[OK] System ready - press F12 to exit
+          </code>
+        </div>
+        <a href="project-3.html" class="read-more">Ver proyecto completo →</a>
+      </div>
+    </article>
+
+    <!-- PROJECT 4 -->
+    <article class="post">
+      <div class="post-header">
+        <span class="post-tag">[ FORENSICS ]</span>
+        <span class="post-date">10-08-2026</span>
+      </div>
+      <h2 class="post-title" onclick="togglePost(this)">█ Memory Manipulation</h2>
+      <p class="post-subtitle">Data persistence and reconstruction research.</p>
+      <div class="post-expandable">
+        <p class="post-body-text">Exploring how digital memories can be stored, retrieved, and manipulated. Data forensics, memory reconstruction algorithms, and long-term storage solutions.</p>
+        <div class="post-details">
+          <div class="detail-item">STATUS: RESEARCH</div>
+          <div class="detail-item">PRIORITY: HIGH</div>
+          <div class="detail-item">TEAM: 2 RESEARCHERS</div>
+        </div>
+        <div class="post-code">
+          <code>
+$ ./mem_analysis --scan /dev/mem<br>
+[INFO] Scanning memory dump...<br>
+[INFO] Found 3 known signatures<br>
+[INFO] Extracting recoverable data...<br>
+[OK] Forensic analysis complete - report generated
+          </code>
+        </div>
+        <a href="project-4.html" class="read-more">Ver proyecto completo →</a>
+      </div>
+    </article>
+
+  </div>
+
+  <div class="bottom-bar">
+    <span>Dead Smile Labs © 2026</span>
+    <span>terminal.denpa.labs</span>
+  </div>
+
+</div>
+
+<script>
+function togglePost(titleElement) {
+  const post = titleElement.closest('.post');
+  const expandable = post.querySelector('.post-expandable');
+  const subtitle = post.querySelector('.post-subtitle');
+  
+  if (post.classList.contains('expanded')) {
+    post.classList.remove('expanded');
+    expandable.style.maxHeight = '0';
+    expandable.style.opacity = '0';
+  } else {
+    post.classList.add('expanded');
+    expandable.style.maxHeight = expandable.scrollHeight + 'px';
+    expandable.style.opacity = '1';
+  }
+}
+</script>
+
+</body>
+</html>

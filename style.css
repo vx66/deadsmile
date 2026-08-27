@@ -1,0 +1,274 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+@font-face {
+  font-family: 'Terminal';
+  src: local('Courier New');
+}
+
+html, body {
+  width: 100%;
+  height: 100%;
+  background: #000;
+  color: #fff;
+  font-family: 'Courier New', 'Lucida Console', monospace;
+  font-size: 16px;
+  line-height: 1.7;
+  overflow-x: hidden;
+}
+
+.screen {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 20px 25px;
+  border-left: 1px solid #333;
+  border-right: 1px solid #333;
+  min-height: 100vh;
+}
+
+/* Logo Container */
+.logo-container {
+  text-align: center;
+  padding: 20px 0;
+  width: 100%;
+}
+
+.site-logo {
+  width: 100%;
+  height: auto;
+  display: block;
+  image-rendering: pixelated;
+  filter: grayscale(100%) contrast(120%);
+}
+
+/* Terminal Bar */
+.terminal-bar {
+  background: #111;
+  border-top: 1px solid #333;
+  border-bottom: 1px solid #333;
+  padding: 12px 20px;
+  color: #999;
+  font-size: 14px;
+  margin-bottom: 35px;
+}
+
+.blink {
+  animation: blink 1s step-end infinite;
+}
+
+@keyframes blink {
+  0%, 50% { opacity: 1; }
+  51%, 100% { opacity: 0; }
+}
+
+/* Content */
+.content {
+  padding: 0;
+}
+
+/* Post */
+.post {
+  border-bottom: 1px solid #222;
+  padding-bottom: 25px;
+  margin-bottom: 25px;
+}
+
+.post-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+  font-size: 12px;
+}
+
+.post-tag {
+  color: #666;
+  letter-spacing: 1px;
+}
+
+.post-date {
+  color: #555;
+  font-variant-numeric: tabular-nums;
+}
+
+.post-title {
+  color: #fff;
+  font-size: 20px;
+  font-weight: normal;
+  margin-bottom: 8px;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.post-title:hover {
+  color: #ccc;
+}
+
+.post-subtitle {
+  color: #888;
+  font-size: 14px;
+  margin-bottom: 15px;
+  font-style: italic;
+}
+
+.post-expandable {
+  max-height: 0;
+  opacity: 0;
+  overflow: hidden;
+  transition: max-height 0.4s ease, opacity 0.3s ease;
+  padding-left: 12px;
+}
+
+.post.expanded .post-expandable {
+  max-height: 600px;
+  opacity: 1;
+}
+
+.post-body-text {
+  color: #bbb;
+  margin-bottom: 18px;
+  font-size: 15px;
+  line-height: 1.7;
+}
+
+.post-details {
+  display: flex;
+  gap: 25px;
+  margin-bottom: 18px;
+  font-size: 12px;
+  color: #666;
+  letter-spacing: 0.5px;
+}
+
+.detail-item {
+  padding: 3px 0;
+}
+
+/* Read More Button */
+.read-more {
+  color: #000;
+  background: #fff;
+  font-size: 12px;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  text-decoration: none;
+  padding: 10px 20px;
+  display: inline-block;
+  margin-top: 18px;
+  border: 1px solid #fff;
+  transition: all 0.2s;
+}
+
+.read-more:hover {
+  background: #000;
+  color: #fff;
+}
+
+/* Terminal Code Box */
+.post-code {
+  background: #0a0a0a;
+  border: 1px solid #222;
+  padding: 15px 18px;
+  font-family: 'Courier New', monospace;
+  font-size: 14px;
+  color: #888;
+  line-height: 1.8;
+  overflow-x: auto;
+}
+
+.post-code code {
+  white-space: pre;
+}
+
+/* Bottom Bar */
+.bottom-bar {
+  border-top: 1px solid #333;
+  padding: 18px 0;
+  display: flex;
+  justify-content: space-between;
+  font-size: 13px;
+  color: #444;
+  letter-spacing: 1px;
+  margin-top: 35px;
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+  .screen {
+    padding: 18px 15px;
+  }
+
+  .ascii-logo {
+    font-size: 6px;
+  }
+
+  .post-details {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .terminal-bar {
+    font-size: 12px;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+}
+
+/* Section Titles */
+.section-title {
+  color: #888;
+  font-size: 13px;
+  font-weight: normal;
+  margin-bottom: 10px;
+  letter-spacing: 1px;
+}
+
+/* Navigation Button */
+.post-nav {
+  margin-top: 30px;
+  padding-top: 18px;
+  border-top: 1px solid #222;
+}
+
+.nav-button {
+  color: #000;
+  background: #fff;
+  font-size: 12px;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  text-decoration: none;
+  padding: 10px 20px;
+  display: inline-block;
+  border: 1px solid #fff;
+  transition: all 0.2s;
+}
+
+.nav-button:hover {
+  background: #000;
+  color: #fff;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 4px;
+}
+
+::-webkit-scrollbar-track {
+  background: #000;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #333;
+}
+
+::selection {
+  background: #fff;
+  color: #000;
+}

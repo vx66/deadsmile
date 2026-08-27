@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dead Smile Labs - Dashboard</title>
+  <link rel="stylesheet" href="/css/dashboard.css">
+  <script src="/js/vue.global.prod.js"></script>
+  <script src="/js/marked.min.js"></script>
+</head>
+<body>
+  <div id="app">
+
+    <!-- Login View -->
+    <div v-if="!authenticated" class="login-container">
+      <div class="login-box">
+        <div class="login-header">
+          <h1>DEAD SMILE LABS</h1>
+          <span class="blink">█</span>
+        </div>
+        <div class="terminal-bar">
+          <span>deadsmile@labs ~$ login</span>
+        </div>
+        <form @submit.prevent="login" class="login-form">
+          <div v-if="loginError" class="login-error">{{ loginError }}</div>
+          <div class="form-group">
+            <label>USER</label>
+            <input v-model="loginUser" type="text" required autocomplete="off">
+          </div>
+          <div class="form-group">
+            <label>PASS</label>
+            <input v-model="loginPass" type="password" required autocomplete="off">
+          </div>
+          <button type="submit" class="btn-login">ENTER</button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Dashboard -->
+    <div v-else class="dashboard">
+      <div class="sidebar">
+        <div class="sidebar-header">
+          <h2>DASHBOARD</h2>
+          <span class="blink">█</span>
+        </div>
+        <nav class="sidebar-nav">
+          <a href="#" @click.prevent="currentView = 'articles'" :class="{ active: currentView === 'articles' }">
+            > ARTICLES
+          </a>
+          <a href="#" @click.prevent="currentView = 'categories'" :class="{ active: currentView === 'categories' }">
+            > CATEGORIES
+          </a>
+          <a href="/" class="back-link">
+            > VIEW SITE
+          </a>
+          <a href="#" @click.prevent="logout" class="logout-link">
+            > LOGOUT
+          </a>
+        </nav>
+      </div>
+
+      <main class="main-content">
+        <!-- Articles View -->
+        <div v-if="currentView === 'articles'" class="view">
+          <div class="view-header">
+            <h1>ARTICLES</h1>
+            <button @click="openArticleModal()" class="btn-primary">+ NEW</button>
+          </div>
+
+          <div class="articles-list">
+            <div v-for="article in articles" :key="article.id" class="article-item">
+              <div class="article-info">
+                <span class="article-category">[{{ article.category_name || 'NONE' }}]</span>
+                <h3>{{ article.title }}</h3>
+                <p>{{ article.subtitle }}</p>
+              </div>
+              <div class="article-actions">
+                <button @click="editArticle(article)" class="btn-edit">EDIT</button>
+                <button @click="deleteArticle(article.id)" class="btn-delete">DEL</button>
+              </div>
+            </div>
+            <div v-if="articles.length === 0" class="empty-state">No articles found.</div>
+          </div>
+        </div>
+
+        <!-- Categories View -->
+        <div v-if="currentView === 'categories'" class="view">
+          <div class="view-header">
+            <h1>CATEGORIES</h1>
+            <button @click="openCategoryModal()" class="btn-primary">+ NEW</button>
+          </div>
+
+          <div class="categories-list">
+            <div v-for="category in categories" :key="category.id" class="category-item">
+              <div class="category-info">
+                <h3>{{ category.name }}</h3>
+                <span class="category-slug">{{ category.slug }}</span>
+              </div>
+              <div class="category-actions">
+                <button @click="editCategory(category)" class="btn-edit">EDIT</button>
+                <button @click="deleteCategory(category.id)" class="btn-delete">DEL</button>
+              </div>
+            </div>
+            <div v-if="categories.length === 0" class="empty-state">No categories found.</div>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <!-- Article Modal -->
+    <div v-if="showArticleModal" class="modal" @click.self="closeArticleModal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2>{{ editingArticle ? 'EDIT ARTICLE' : 'NEW ARTICLE' }}</h2>
+          <button @click="closeArticleModal" class="btn-close">×</button>
+        </div>
+        <form @submit.prevent="saveArticle" class="modal-form">
+          <div class="form-row">
+            <div class="form-group">
+              <label>TITLE</label>
+              <input v-model="articleForm.title" type="text" required>
+            </div>
+            <div class="form-group form-group-small">
+              <label>DATE</label>
+              <input v-model="articleForm.date" type="date" required>
+            </div>
+          </div>
+          <div class="form-group">
+            <label>SUBTITLE</label>
+            <input v-model="articleForm.subtitle" type="text">
+          </div>
+          <div class="form-group">
+            <label>CATEGORY</label>
+            <select v-model="articleForm.category_id">
+              <option value="">Select category</option>
+              <option v-for="cat in categories" :key="cat.id" :value="cat.id">{{ cat.name }}</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>CONTENT (Markdown) <span class="label-hint">Bold, italic, images, links, code blocks</span></label>
+            <div class="editor-tabs">
+              <button type="button" :class="{ active: editorTab === 'write' }" @click="editorTab = 'write'">WRITE</button>
+              <button type="button" :class="{ active: editorTab === 'preview' }" @click="editorTab = 'preview'">PREVIEW</button>
+            </div>
+            <textarea v-show="editorTab === 'write'" v-model="articleForm.content" rows="10" placeholder="Write markdown here..."></textarea>
+            <div v-show="editorTab === 'preview'" class="markdown-preview" v-html="renderedContent"></div>
+          </div>
+          <div class="form-group">
+            <label>COVER IMAGE</label>
+            <input type="file" @change="handleImageUpload" accept="image/*">
+            <div v-if="articleForm.image && typeof articleForm.image === 'string'" class="image-preview">
+              <img :src="'/uploads/' + articleForm.image" alt="Preview">
+            </div>
+          </div>
+          <div class="form-actions">
+            <button type="button" @click="closeArticleModal" class="btn-cancel">CANCEL</button>
+            <button type="submit" class="btn-save">SAVE</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Category Modal -->
+    <div v-if="showCategoryModal" class="modal" @click.self="closeCategoryModal">
+      <div class="modal-content modal-small">
+        <div class="modal-header">
+          <h2>{{ editingCategory ? 'EDIT CATEGORY' : 'NEW CATEGORY' }}</h2>
+          <button @click="closeCategoryModal" class="btn-close">×</button>
+        </div>
+        <form @submit.prevent="saveCategory" class="modal-form">
+          <div class="form-group">
+            <label>NAME</label>
+            <input v-model="categoryForm.name" type="text" required>
+          </div>
+          <div class="form-actions">
+            <button type="button" @click="closeCategoryModal" class="btn-cancel">CANCEL</button>
+            <button type="submit" class="btn-save">SAVE</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+  </div>
+
+  <script src="/js/dashboard.js"></script>
+</body>
+</html>
