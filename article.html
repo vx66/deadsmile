@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dead Smile Labs - Article</title>
+  <link rel="stylesheet" href="/style.css">
+  <script src="/js/marked.min.js"></script>
+</head>
+<body>
+
+<div class="screen">
+
+  <div class="terminal-bar">
+    <span>deadsmile@labs ~$ cat /var/log/articles/<span id="article-id"></span>.txt</span>
+    <span class="blink">█</span>
+  </div>
+
+  <div class="content" id="app">
+    <div v-if="loading" class="loading">Loading...</div>
+    <div v-else-if="error" class="empty">{{ error }}</div>
+    <div v-else-if="article">
+      <article class="post-full">
+        <div class="post-header">
+          <span class="post-tag">[ {{ article.category_name || 'UNCATEGORIZED' }} ]</span>
+          <span class="post-date">{{ article.date || article.created_at }}</span>
+        </div>
+        <h1 class="post-title-full">█ {{ article.title }}</h1>
+        <p class="post-subtitle-full">{{ article.subtitle }}</p>
+        <div v-if="article.image" class="post-cover">
+          <img :src="'/uploads/' + article.image" :alt="article.title">
+        </div>
+        <div class="post-content-full" v-html="renderMarkdown(article.content)"></div>
+      </article>
+      <div class="post-nav">
+        <a href="/" class="nav-button">Volver al home</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="bottom-bar">
+    <span>Dead Smile Labs © 2026</span>
+    <span>terminal.denpa.labs</span>
+  </div>
+
+</div>
+
+<script src="/js/vue.global.prod.js"></script>
+<script>
+const { createApp, ref, onMounted } = Vue;
+
+createApp({
+  setup() {
+    const article = ref(null);
+    const loading = ref(true);
+    const error = ref('');
+
+    const renderMarkdown = (content) => {
+      if (!content) return '';
+      return marked.parse(content);
+    };
+
+    const fetchArticle = async () => {
+      const pathParts = window.location.pathname.split('/');
+      const id = pathParts[pathParts.length - 1];
+      
+      try {
+        const res = await fetch('/api/articles/public/' + id);
+        if (!res.ok) throw new Error('Article not found');
+        article.value = await res.json();
+        document.getElementById('article-id').textContent = id;
+      } catch (e) {
+        error.value = 'Article not found';
+      }
+      loading.value = false;
+    };
+
+    onMounted(() => {
+      fetchArticle();
+    });
+
+    return { article, loading, error, renderMarkdown };
+  }
+}).mount('#app');
+</script>
+
+</body>
+</html>

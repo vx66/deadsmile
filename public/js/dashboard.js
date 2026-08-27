@@ -20,6 +20,7 @@ createApp({
     const articleForm = ref({
       title: '',
       subtitle: '',
+      excerpt: '',
       content: '',
       category_id: '',
       image: null,
@@ -111,6 +112,7 @@ createApp({
         articleForm.value = {
           title: article.title,
           subtitle: article.subtitle,
+          excerpt: article.excerpt || '',
           content: article.content,
           category_id: article.category_id || '',
           image: article.image,
@@ -120,6 +122,7 @@ createApp({
         articleForm.value = {
           title: '',
           subtitle: '',
+          excerpt: '',
           content: '',
           category_id: '',
           image: null,
@@ -155,6 +158,7 @@ createApp({
       const formData = new FormData();
       formData.append('title', articleForm.value.title);
       formData.append('subtitle', articleForm.value.subtitle);
+      formData.append('excerpt', articleForm.value.excerpt);
       formData.append('content', articleForm.value.content);
       formData.append('category_id', articleForm.value.category_id);
       formData.append('date', articleForm.value.date);

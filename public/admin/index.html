@@ -130,6 +130,10 @@
             <input v-model="articleForm.subtitle" type="text">
           </div>
           <div class="form-group">
+            <label>EXCERPT <span class="label-hint">Summary shown on main page</span></label>
+            <textarea v-model="articleForm.excerpt" rows="3" placeholder="Brief summary of the article..."></textarea>
+          </div>
+          <div class="form-group">
             <label>CATEGORY</label>
             <select v-model="articleForm.category_id">
               <option value="">Select category</option>

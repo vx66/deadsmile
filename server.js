@@ -38,6 +38,7 @@ db.exec(`
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     title TEXT NOT NULL,
     subtitle TEXT,
+    excerpt TEXT,
     content TEXT,
     category_id INTEGER,
     image TEXT,
@@ -48,10 +49,9 @@ db.exec(`
   );
 `);
 
-// Add date column if missing
-try {
-  db.exec("ALTER TABLE articles ADD COLUMN date TEXT");
-} catch(e) {}
+// Add columns if missing
+try { db.exec("ALTER TABLE articles ADD COLUMN date TEXT"); } catch(e) {}
+try { db.exec("ALTER TABLE articles ADD COLUMN excerpt TEXT"); } catch(e) {}
 
 // Insert default categories if empty
 const categoryCount = db.prepare('SELECT COUNT(*) as count FROM categories').get();
@@ -201,13 +201,29 @@ app.get('/api/health', (req, res) => {
 // Public articles endpoint (no auth required)
 app.get('/api/articles/public', (req, res) => {
   const articles = db.prepare(`
-    SELECT a.id, a.title, a.subtitle, a.content, a.image, a.date, a.created_at,
+    SELECT a.id, a.title, a.subtitle, a.excerpt, a.content, a.image, a.date, a.created_at,
            c.name as category_name, c.slug as category_slug 
     FROM articles a 
     LEFT JOIN categories c ON a.category_id = c.id 
     ORDER BY a.date DESC, a.created_at DESC
   `).all();
   res.json(articles);
+});
+
+// Public single article endpoint
+app.get('/api/articles/public/:id', (req, res) => {
+  const article = db.prepare(`
+    SELECT a.id, a.title, a.subtitle, a.excerpt, a.content, a.image, a.date, a.created_at,
+           c.name as category_name, c.slug as category_slug 
+    FROM articles a 
+    LEFT JOIN categories c ON a.category_id = c.id 
+    WHERE a.id = ?
+  `).get(req.params.id);
+  
+  if (!article) {
+    return res.status(404).json({ error: 'Article not found' });
+  }
+  res.json(article);
 });
 
 // API Routes (protected)
@@ -240,14 +256,14 @@ app.get('/api/articles/:id', requireAuth, (req, res) => {
 
 // Create article
 app.post('/api/articles', requireAuth, upload.single('image'), (req, res) => {
-  const { title, subtitle, content, category_id, date } = req.body;
+  const { title, subtitle, excerpt, content, category_id, date } = req.body;
   const image = req.file ? req.file.filename : null;
   const articleDate = date || new Date().toISOString().split('T')[0];
   
   const result = db.prepare(`
-    INSERT INTO articles (title, subtitle, content, category_id, image, date) 
-    VALUES (?, ?, ?, ?, ?, ?)
-  `).run(title, subtitle, content, category_id, image, articleDate);
+    INSERT INTO articles (title, subtitle, excerpt, content, category_id, image, date) 
+    VALUES (?, ?, ?, ?, ?, ?, ?)
+  `).run(title, subtitle, excerpt, content, category_id, image, articleDate);
   
   const article = db.prepare('SELECT * FROM articles WHERE id = ?').get(result.lastInsertRowid);
   res.status(201).json(article);
@@ -255,15 +271,15 @@ app.post('/api/articles', requireAuth, upload.single('image'), (req, res) => {
 
 // Update article
 app.put('/api/articles/:id', requireAuth, upload.single('image'), (req, res) => {
-  const { title, subtitle, content, category_id, date } = req.body;
+  const { title, subtitle, excerpt, content, category_id, date } = req.body;
   const image = req.file ? req.file.filename : req.body.existing_image;
   const articleDate = date || new Date().toISOString().split('T')[0];
   
   db.prepare(`
     UPDATE articles 
-    SET title = ?, subtitle = ?, content = ?, category_id = ?, image = ?, date = ?, updated_at = CURRENT_TIMESTAMP 
+    SET title = ?, subtitle = ?, excerpt = ?, content = ?, category_id = ?, image = ?, date = ?, updated_at = CURRENT_TIMESTAMP 
     WHERE id = ?
-  `).run(title, subtitle, content, category_id, image, articleDate, req.params.id);
+  `).run(title, subtitle, excerpt, content, category_id, image, articleDate, req.params.id);
   
   const article = db.prepare('SELECT * FROM articles WHERE id = ?').get(req.params.id);
   res.json(article);
@@ -318,6 +334,10 @@ app.post('/api/upload', requireAuth, upload.single('image'), (req, res) => {
 // Serve public pages (preserve existing design)
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'index.html'));
+});
+
+app.get('/article/:id', (req, res) => {
+  res.sendFile(path.join(__dirname, 'article.html'));
 });
 
 app.get('/project-:id.html', (req, res) => {

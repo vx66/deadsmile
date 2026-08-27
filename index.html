@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Dead Smile Labs</title>
   <link rel="stylesheet" href="style.css">
-  <script src="/js/marked.min.js"></script>
 </head>
 <body>
 
@@ -29,14 +28,10 @@
         <span class="post-tag">[ {{ article.category_name || 'UNCATEGORIZED' }} ]</span>
         <span class="post-date">{{ article.date || article.created_at }}</span>
       </div>
-      <h2 class="post-title" @click="togglePost($event, article.id)">█ {{ article.title }}</h2>
+      <h2 class="post-title">█ {{ article.title }}</h2>
       <p class="post-subtitle">{{ article.subtitle }}</p>
-      <div class="post-expandable" :id="'post-' + article.id">
-        <div class="post-body-text" v-html="renderMarkdown(article.content)"></div>
-        <div v-if="article.image" class="post-image">
-          <img :src="'/uploads/' + article.image" :alt="article.title">
-        </div>
-      </div>
+      <div v-if="article.excerpt" class="post-excerpt">{{ article.excerpt }}</div>
+      <a :href="'/article/' + article.id" class="read-more">Read more →</a>
     </article>
   </div>
 
@@ -66,29 +61,11 @@ createApp({
       loading.value = false;
     };
 
-    const togglePost = (event, id) => {
-      const el = document.getElementById('post-' + id);
-      if (el.classList.contains('expanded')) {
-        el.classList.remove('expanded');
-        el.style.maxHeight = '0';
-        el.style.opacity = '0';
-      } else {
-        el.classList.add('expanded');
-        el.style.maxHeight = el.scrollHeight + 'px';
-        el.style.opacity = '1';
-      }
-    };
-
-    const renderMarkdown = (content) => {
-      if (!content) return '';
-      return marked.parse(content);
-    };
-
     onMounted(() => {
       fetchArticles();
     });
 
-    return { articles, loading, togglePost, renderMarkdown };
+    return { articles, loading };
   }
 }).mount('#app');
 </script>
