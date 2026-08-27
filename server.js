@@ -198,6 +198,18 @@ app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
 });
 
+// Public articles endpoint (no auth required)
+app.get('/api/articles/public', (req, res) => {
+  const articles = db.prepare(`
+    SELECT a.id, a.title, a.subtitle, a.content, a.image, a.date, a.created_at,
+           c.name as category_name, c.slug as category_slug 
+    FROM articles a 
+    LEFT JOIN categories c ON a.category_id = c.id 
+    ORDER BY a.date DESC, a.created_at DESC
+  `).all();
+  res.json(articles);
+});
+
 // API Routes (protected)
 
 // Get all articles
