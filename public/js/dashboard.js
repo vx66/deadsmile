@@ -29,6 +29,7 @@ createApp({
 
     const media = ref([]);
     const uploadMessage = ref('');
+    const mediaView = ref(false);
     
     const categoryForm = ref({
       name: '',
@@ -128,6 +129,8 @@ createApp({
     const openArticleModal = (article = null) => {
       editorTab.value = 'write';
       editingArticle.value = article;
+      mediaView.value = false;
+      fetchMedia();
       if (article) {
         articleForm.value = {
           title: article.title,
@@ -155,6 +158,25 @@ createApp({
     const closeArticleModal = () => {
       showArticleModal.value = false;
       editingArticle.value = null;
+      mediaView.value = false;
+    };
+
+    const insertMedia = (markdown) => {
+      const ta = document.getElementById('article-content');
+      const current = articleForm.value.content || '';
+      if (ta && ta.selectionStart !== undefined && ta.selectionStart !== null) {
+        const start = ta.selectionStart;
+        const end = ta.selectionEnd;
+        articleForm.value.content = current.slice(0, start) + markdown + current.slice(end);
+        requestAnimationFrame(() => {
+          ta.focus();
+          const pos = start + markdown.length;
+          ta.setSelectionRange(pos, pos);
+        });
+      } else {
+        articleForm.value.content = current + (current ? '\n' : '') + markdown;
+      }
+      editorTab.value = 'write';
     };
 
     const cancelArticleModal = () => {
@@ -398,6 +420,8 @@ createApp({
       aboutTab,
       media,
       uploadMessage,
+      mediaView,
+      insertMedia,
       fetchAbout,
       fetchMedia,
       uploadMedia,

@@ -471,6 +471,91 @@ html, body {
   font-size: 10px;
 }
 
+/* Media picker inside article modal */
+.media-toolbar {
+  margin-top: 10px;
+}
+
+.btn-media {
+  width: 100%;
+  background: transparent;
+  color: #aaa;
+  border: 1px dashed #444;
+  padding: 10px;
+  font-family: inherit;
+  font-size: 11px;
+  letter-spacing: 1px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-media:hover {
+  color: #fff;
+  border-color: #666;
+}
+
+.media-picker {
+  margin-top: 12px;
+  border: 1px solid #333;
+  background: #0e0e0e;
+  padding: 12px;
+}
+
+.media-picker-upload {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.media-message-inline {
+  color: #5ab5ff;
+  font-size: 11px;
+}
+
+.media-picker-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
+  gap: 10px;
+  max-height: 220px;
+  overflow-y: auto;
+}
+
+.media-picker-item {
+  border: 1px solid #333;
+  background: #111;
+  text-align: center;
+}
+
+.media-picker-thumb {
+  height: 70px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-bottom: 1px solid #333;
+}
+
+.media-picker-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.media-picker-label {
+  color: #888;
+  font-size: 9px;
+  letter-spacing: 1px;
+}
+
+.media-insert-btn {
+  width: 100%;
+  padding: 6px 0;
+  font-size: 10px;
+  border: none;
+  border-top: 1px solid #333;
+}
+
 .form-group select {
   appearance: none;
   cursor: pointer;

@@ -204,13 +204,35 @@
             </select>
           </div>
           <div class="form-group">
-            <label>CONTENT (Markdown) <span class="label-hint">Bold, italic, images, links, code blocks · get image markdown in MEDIA</span></label>
+            <label>CONTENT (Markdown) <span class="label-hint">Bold, italic, images, links, code blocks</span></label>
             <div class="editor-tabs">
               <button type="button" :class="{ active: editorTab === 'write' }" @click="editorTab = 'write'">WRITE</button>
               <button type="button" :class="{ active: editorTab === 'preview' }" @click="editorTab = 'preview'">PREVIEW</button>
             </div>
-            <textarea v-show="editorTab === 'write'" v-model="articleForm.content" rows="10" placeholder="Write markdown here..."></textarea>
+            <textarea id="article-content" v-show="editorTab === 'write'" v-model="articleForm.content" rows="10" placeholder="Write markdown here..."></textarea>
             <div v-show="editorTab === 'preview'" class="markdown-preview" v-html="renderedContent"></div>
+
+            <div class="media-toolbar">
+              <button type="button" class="btn-media" @click="mediaView = !mediaView">{{ mediaView ? 'HIDE MEDIA' : '+ INSERT MEDIA' }}</button>
+            </div>
+            <div v-show="mediaView" class="media-picker">
+              <div class="media-picker-upload">
+                <label class="btn-primary media-upload-btn">+ UPLOAD NEW
+                  <input type="file" @change="uploadMedia" accept="image/*,video/*,audio/*" multiple style="display:none">
+                </label>
+                <span v-if="uploadMessage" class="media-message-inline">{{ uploadMessage }}</span>
+              </div>
+              <div v-if="media.length === 0" class="empty-state">No media yet. Upload something first.</div>
+              <div class="media-picker-grid">
+                <div v-for="item in media" :key="item.filename" class="media-picker-item">
+                  <div class="media-picker-thumb">
+                    <img v-if="isImage(item.filename)" :src="item.url" :alt="item.filename">
+                    <div v-else class="media-picker-label">{{ isVideo(item.filename) ? '▶ VIDEO' : (isAudio(item.filename) ? '♪ AUDIO' : 'FILE') }}</div>
+                  </div>
+                  <button type="button" class="btn-edit media-insert-btn" @click="insertMedia(item.markdown)">INSERT</button>
+                </div>
+              </div>
+            </div>
           </div>
           <div class="form-group">
             <label>COVER IMAGE</label>
