@@ -157,6 +157,12 @@ createApp({
       editingArticle.value = null;
     };
 
+    const cancelArticleModal = () => {
+      if (confirm('Are you sure? Unsaved changes will be lost.')) {
+        closeArticleModal();
+      }
+    };
+
     const handleImageUpload = (event) => {
       const file = event.target.files[0];
       if (file) {
@@ -409,6 +415,7 @@ createApp({
       fetchAbout,
       openArticleModal,
       closeArticleModal,
+      cancelArticleModal,
       handleImageUpload,
       saveArticle,
       editArticle,
