@@ -171,15 +171,15 @@ const storage = multer.diskStorage({
 
 const upload = multer({ 
   storage: storage,
-  limits: { fileSize: 5 * 1024 * 1024 }, // 5MB limit
+  limits: { fileSize: 50 * 1024 * 1024 }, // 50MB limit
   fileFilter: (req, file, cb) => {
-    const allowedTypes = /jpeg|jpg|png|gif|webp/;
+    const allowedTypes = /jpeg|jpg|png|gif|webp|svg|mp4|webm|ogg|mp3|wav/;
     const extname = allowedTypes.test(path.extname(file.originalname).toLowerCase());
-    const mimetype = allowedTypes.test(file.mimetype);
+    const mimetype = /^(image|video|audio)\//.test(file.mimetype);
     if (extname && mimetype) {
       return cb(null, true);
     }
-    cb(new Error('Only image files are allowed'));
+    cb(new Error('Only image, video and audio files are allowed'));
   }
 });
 
@@ -348,12 +348,41 @@ app.delete('/api/categories/:id', requireAuth, (req, res) => {
   res.json({ message: 'Category deleted' });
 });
 
-// Upload image
+// Upload image / media
 app.post('/api/upload', requireAuth, upload.single('image'), (req, res) => {
   if (!req.file) {
     return res.status(400).json({ error: 'No file uploaded' });
   }
   res.json({ filename: req.file.filename, path: `/uploads/${req.file.filename}` });
+});
+
+// List uploaded media
+app.get('/api/uploads', requireAuth, (req, res) => {
+  const files = fs.readdirSync(uploadsDir)
+    .filter(f => f !== '.gitkeep')
+    .map(f => {
+      const stat = fs.statSync(path.join(uploadsDir, f));
+      return {
+        filename: f,
+        url: `/uploads/${f}`,
+        markdown: `![${path.parse(f).name}](/uploads/${f})`,
+        size: stat.size,
+        modified: stat.mtime
+      };
+    })
+    .sort((a, b) => b.modified - a.modified);
+  res.json(files);
+});
+
+// Delete uploaded media
+app.delete('/api/uploads/:filename', requireAuth, (req, res) => {
+  const fname = path.basename(req.params.filename);
+  const filePath = path.join(uploadsDir, fname);
+  if (!fs.existsSync(filePath)) {
+    return res.status(404).json({ error: 'File not found' });
+  }
+  fs.unlinkSync(filePath);
+  res.json({ message: 'Deleted' });
 });
 
 // Serve public pages (preserve existing design)

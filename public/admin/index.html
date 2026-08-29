@@ -54,6 +54,9 @@
           <a href="#" @click.prevent="currentView = 'about'" :class="{ active: currentView === 'about' }">
             > ABOUT
           </a>
+          <a href="#" @click.prevent="currentView = 'media'" :class="{ active: currentView === 'media' }">
+            > MEDIA
+          </a>
           <a href="/" class="back-link">
             > VIEW SITE
           </a>
@@ -130,6 +133,40 @@
             </div>
           </div>
         </div>
+
+        <!-- Media View -->
+        <div v-if="currentView === 'media'" class="view">
+          <div class="view-header">
+            <h1>MEDIA LIBRARY</h1>
+            <label class="btn-primary media-upload-btn">
+              + UPLOAD
+              <input type="file" @change="uploadMedia" accept="image/*,video/*,audio/*" multiple style="display:none">
+            </label>
+          </div>
+
+          <div v-if="uploadMessage" class="media-message">{{ uploadMessage }}</div>
+
+          <div class="media-grid">
+            <div v-for="item in media" :key="item.filename" class="media-item">
+              <div class="media-preview">
+                <img v-if="isImage(item.filename)" :src="item.url" :alt="item.filename">
+                <div v-else-if="isVideo(item.filename)" class="media-file-label">▶ VIDEO</div>
+                <div v-else-if="isAudio(item.filename)" class="media-file-label">♪ AUDIO</div>
+                <div v-else class="media-file-label">FILE</div>
+              </div>
+              <div class="media-info">
+                <span class="media-filename">{{ item.filename }}</span>
+                <span class="media-size">{{ formatSize(item.size) }}</span>
+              </div>
+              <div class="media-actions">
+                <button @click="copyMarkdown(item)" class="btn-edit">COPY MD</button>
+                <button @click="copyUrl(item)" class="btn-edit">COPY URL</button>
+                <button @click="deleteMedia(item)" class="btn-delete">DEL</button>
+              </div>
+            </div>
+            <div v-if="media.length === 0" class="empty-state">No media uploaded yet.</div>
+          </div>
+        </div>
       </main>
     </div>
 
@@ -167,7 +204,7 @@
             </select>
           </div>
           <div class="form-group">
-            <label>CONTENT (Markdown) <span class="label-hint">Bold, italic, images, links, code blocks</span></label>
+            <label>CONTENT (Markdown) <span class="label-hint">Bold, italic, images, links, code blocks · get image markdown in MEDIA</span></label>
             <div class="editor-tabs">
               <button type="button" :class="{ active: editorTab === 'write' }" @click="editorTab = 'write'">WRITE</button>
               <button type="button" :class="{ active: editorTab === 'preview' }" @click="editorTab = 'preview'">PREVIEW</button>

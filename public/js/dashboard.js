@@ -26,6 +26,9 @@ createApp({
       image: null,
       date: new Date().toISOString().split('T')[0]
     });
+
+    const media = ref([]);
+    const uploadMessage = ref('');
     
     const categoryForm = ref({
       name: '',
@@ -62,6 +65,7 @@ createApp({
           fetchArticles();
           fetchCategories();
           fetchAbout();
+          fetchMedia();
         }
       } catch (e) {
         authenticated.value = false;
@@ -85,6 +89,7 @@ createApp({
           fetchArticles();
           fetchCategories();
           fetchAbout();
+          fetchMedia();
         } else {
           loginError.value = data.error || 'Invalid credentials';
         }
@@ -289,6 +294,79 @@ createApp({
       aboutTab.value = 'preview';
     };
 
+    // Media library
+    const isImage = (filename) => /\.(jpe?g|png|gif|webp|svg)$/i.test(filename);
+    const isVideo = (filename) => /\.(mp4|webm)$/i.test(filename);
+    const isAudio = (filename) => /\.(mp3|wav|ogg|m4a)$/i.test(filename);
+
+    const formatSize = (bytes) => {
+      if (bytes < 1024) return bytes + ' B';
+      if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+      return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
+    };
+
+    const fetchMedia = async () => {
+      const response = await fetch('/api/uploads');
+      if (response.status === 401) {
+        authenticated.value = false;
+        return;
+      }
+      media.value = await response.json();
+    };
+
+    const uploadMedia = async (event) => {
+      const files = Array.from(event.target.files || []);
+      if (files.length === 0) return;
+      uploadMessage.value = 'Uploading...';
+      let uploaded = 0;
+      for (const file of files) {
+        const formData = new FormData();
+        formData.append('image', file);
+        const response = await fetch('/api/upload', { method: 'POST', body: formData });
+        if (response.ok) uploaded++;
+      }
+      uploadMessage.value = uploaded > 0
+        ? `Uploaded ${uploaded} file${uploaded > 1 ? 's' : ''}.`
+        : 'Upload failed.';
+      event.target.value = '';
+      setTimeout(() => { uploadMessage.value = ''; }, 2500);
+      fetchMedia();
+    };
+
+    const copyText = async (text) => {
+      try {
+        await navigator.clipboard.writeText(text);
+        return true;
+      } catch (e) {
+        const ta = document.createElement('textarea');
+        ta.value = text;
+        document.body.appendChild(ta);
+        ta.select();
+        const ok = document.execCommand('copy');
+        document.body.removeChild(ta);
+        return ok;
+      }
+    };
+
+    const copyMarkdown = async (item) => {
+      const ok = await copyText(item.markdown);
+      uploadMessage.value = ok ? 'Markdown copied!' : 'Copy failed';
+      setTimeout(() => { uploadMessage.value = ''; }, 2000);
+    };
+
+    const copyUrl = async (item) => {
+      const ok = await copyText(item.url);
+      uploadMessage.value = ok ? 'URL copied!' : 'Copy failed';
+      setTimeout(() => { uploadMessage.value = ''; }, 2000);
+    };
+
+    const deleteMedia = async (item) => {
+      if (confirm('Delete this file?')) {
+        await fetch('/api/uploads/' + encodeURIComponent(item.filename), { method: 'DELETE' });
+        fetchMedia();
+      }
+    };
+
     // Initialize
     onMounted(() => {
       checkAuth();
@@ -312,6 +390,18 @@ createApp({
       categoryForm,
       aboutForm,
       aboutTab,
+      media,
+      uploadMessage,
+      fetchAbout,
+      fetchMedia,
+      uploadMedia,
+      isImage,
+      isVideo,
+      isAudio,
+      formatSize,
+      copyMarkdown,
+      copyUrl,
+      deleteMedia,
       editorTab,
       renderedContent,
       renderedAbout,
