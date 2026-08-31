@@ -39,10 +39,21 @@ html, body {
   display: block;
   image-rendering: pixelated;
   filter: grayscale(100%) contrast(120%);
+  animation: crt-flicker 2s infinite;
 }
 
-.logo-container:hover .site-logo {
-  opacity: 0.85;
+@keyframes crt-flicker {
+  0%   { opacity: 1; }
+  7%   { opacity: 0.94; }
+  10%  { opacity: 1; }
+  27%  { opacity: 0.97; }
+  31%  { opacity: 0.9; }
+  34%  { opacity: 1; }
+  52%  { opacity: 0.95; }
+  55%  { opacity: 1; }
+  77%  { opacity: 0.91; }
+  82%  { opacity: 1; }
+  100% { opacity: 1; }
 }
 
 /* Menu Bar */
