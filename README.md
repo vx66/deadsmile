@@ -77,8 +77,8 @@ docker run -p 3000:3000 deadsmile
 | Field | Value |
 |-------|-------|
 | URL | `http://localhost:3000/admin` |
-| Username | `xergno` |
-| Password | `simbionte666` |
+| Username | `YOUR_USER` |
+| Password | `YOUR_PASSWORD` |
 
 ## Project Structure
 
